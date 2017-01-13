@@ -1,0 +1,43 @@
+<html>
+<head>
+	<style>
+		.field {
+			border: 3px solid black;
+			display: inline-block;
+			padding: .5px;
+		}
+		p { line-height: 100%; margin: 0; }
+		div.block { display: inline-block; margin: .5px; width: 16px; height: 16px; }
+		.block-0 { background: #fff; }
+		.block-1 { background: #0B1A59; }
+		.block-2 { background: #000C3F; }
+		.block-3 { background: #3F3075; }
+		.block-4 { background: #1B0B5A; }
+		.block-5 { background: #29506D; }
+		.block-6 { background: #053254; }
+		.block-7 { background: #00223B; }
+	</style>
+</head>
+<body>
+<div id="main"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.min.js"></script>
+</script>
+<script>
+	requirejs.config({
+	paths: {
+	     main: 'output/Main'
+	}});
+	require(["main"], function(Elm) {
+	    var app = Elm.Main.fullscreen();
+
+		document.addEventListener("keydown", function(e) {
+			app.ports.keydown.send(e.keyCode);
+		});
+
+		document.addEventListener("keyup", function(e) {
+			app.ports.keyup.send(e.keyCode);
+		});
+	});
+</script>
+</body>
+</html>
