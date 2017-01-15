@@ -40,10 +40,10 @@ rotateBlock state =
 
 mergeBlock : Transition
 mergeBlock state =
-    { state 
-    | grid = removeCompletedRows (merge state)
-    , block = empty 
-    }
+    removeCompletedRows 
+        { state 
+        | grid = merge state 
+        , block = empty }
 
 
 applyIfValid : State -> Transition -> State

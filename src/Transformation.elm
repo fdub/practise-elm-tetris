@@ -92,9 +92,10 @@ isValid state =
     in
         isMergeValid && isOffsetValid
     
-removeCompletedRows : Grid -> Grid
-removeCompletedRows grid =
+removeCompletedRows : State -> State
+removeCompletedRows state =
     let 
+        grid = state.grid
         rows = 
             grid.rows
             |> Array.filter (\row ->
@@ -102,12 +103,14 @@ removeCompletedRows grid =
                 |> Array.toList
                 |> List.any (\pixel -> pixel.value == 0)
             )
+        numRemoved = grid.size.height - (Array.length rows)
     in
-        List.range 0 (grid.size.height - (Array.length rows) - 1)
+        List.range 0 (numRemoved - 1)
         |> List.map (\_ -> 
             List.range 0 (grid.size.width - 1)
             |> List.map (\_ -> 0)
         )
         |> createGrid
-        |> \newGrid -> { grid | rows = Array.append newGrid.rows rows }
+        |> \emptyRowsGrid -> { grid | rows = Array.append emptyRowsGrid.rows rows }
+        |> \newGrid -> { state | grid = newGrid, score = state.score + numRemoved * numRemoved }
     

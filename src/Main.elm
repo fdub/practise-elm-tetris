@@ -27,7 +27,7 @@ main =
 
 init : (Model, Cmd Msg)
 init =
-    (Model "" initState False 0 True, Cmd.none)
+    (Model "Score: 0" initState False 0 True, Cmd.none)
 
 
 update : Msg -> Model -> (Model, Cmd Msg)
@@ -96,6 +96,7 @@ update msg model =
                             , offset = Point center 0 
                             }
                         , frameCounter = -5
+                        , message = "Score: " ++ (toString state.score)
                         }
                 in
                     if (isValid model_.state) then
@@ -123,4 +124,4 @@ view model =
 
 initState : State
 initState =
-    State (emptyGrid (Size 10 20)) (blocks |> Array.get 0 |> Maybe.withDefault empty) (Point 8 0)
+    State (emptyGrid (Size 10 20)) (blocks |> Array.get 0 |> Maybe.withDefault empty) (Point 8 0) 0

@@ -7,4 +7,5 @@ import Block exposing (..)
 type alias State = 
     { grid : Grid
     , block : Block
-    , offset : Point }
+    , offset : Point
+    , score : Int }
