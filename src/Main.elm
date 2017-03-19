@@ -4,8 +4,10 @@ import Html exposing (..)
 import Array exposing (Array)
 import Random exposing (..)
 import Time exposing (..)
+import WebSocket
 
 import Block exposing (..)
+import Json exposing (..)
 import Grid exposing (..)
 import Model exposing (..)
 import Ports exposing (..)
@@ -102,15 +104,42 @@ update msg model =
                         (model_, Cmd.none)
                     else
                         ({ model | running = False, message = "Game over!" }, Cmd.none)
+            
+            ReceiveMessage message ->
+                case (decodeKeyValuePair message) of
+                    Result.Ok (key,value) -> 
+                        case key of 
+                          "ADDROW" -> 
+                            model ! [ Random.list 10 (Random.int 0 10) |> Random.generate RandomLine ]
+                          _ -> 
+                            model ! [ Cmd.none ]
+                    Result.Err err ->
+                        { model | message = err } ! [ Cmd.none ]
+            
+            RandomLine pixels ->
+                case (validateRandomRow pixels) of
+                    True ->
+                        let 
+                            addPixels state = { state | grid = addRandomRow pixels state.grid }
+                        in
+                            if (isValid (addPixels model.state)) then
+                                { model | state = (addPixels model.state) } ! [ Cmd.none ]
+                            else
+                                { model | state = (addPixels (mergeBlock model.state)) } ! [ Random.generate NewBlock (Random.int 0 6) ]
+                    False ->
+                        model ! [ Random.list 10 (Random.int 0 10) |> Random.generate RandomLine ]
     else
         (model, Cmd.none)
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
         [ keydown KeyDown
         , keyup KeyUp
-        , Time.every (35 * Time.millisecond) Tick ]
+        , Time.every (35 * Time.millisecond) Tick
+        , WebSocket.listen "ws://localhost:8001/text" ReceiveMessage
+        ]
 
 
 view : Model -> Html Msg

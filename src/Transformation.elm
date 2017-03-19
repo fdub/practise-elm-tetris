@@ -1,4 +1,4 @@
-module Transformation exposing (rotate, rotateOffset, merge, isValid, removeCompletedRows)
+module Transformation exposing (rotate, rotateOffset, merge, isValid, removeCompletedRows, addRandomRow, validateRandomRow)
 
 import Array exposing (Array)
 
@@ -92,6 +92,7 @@ isValid state =
     in
         isMergeValid && isOffsetValid
     
+
 removeCompletedRows : Grid -> Grid
 removeCompletedRows grid =
     let 
@@ -110,4 +111,27 @@ removeCompletedRows grid =
         )
         |> createGrid
         |> \newGrid -> { grid | rows = Array.append newGrid.rows rows }
-    
+
+
+addRandomRow : List Int -> Grid -> Grid
+addRandomRow pixels grid =
+    let 
+        normalize i = if (i > 7) then 0 else i
+        height = Array.length grid.rows
+        rows =
+            grid.rows 
+            |> Array.slice 1 height
+            |> Array.push (pixels |> List.map normalize |> List.map Pixel |> Array.fromList |> Row)
+    in
+        { grid | rows = rows }
+        
+validateRandomRow : List Int -> Bool
+validateRandomRow pixels =
+    let 
+        normalize i = if (i > 7) then 0 else i
+    in
+        pixels 
+        |> List.map normalize 
+        |> List.filter (\x -> x > 0) 
+        |> List.length 
+        |> \l -> 5 <= l && l <= 8

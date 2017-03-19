@@ -18,3 +18,5 @@ type Msg
     | KeyUp Int
     | Tick Time
     | NewBlock Int
+    | ReceiveMessage String
+    | RandomLine (List Int)
